@@ -12,7 +12,8 @@ exports.run = async (REP) => {
 
     const NodeManager = REP.get("NodeManager");
     const local_node = await NodeManager.get("18.16.1");
-    if (!local_node) return
+    if (!local_node) return;
+    await local_node.npm_install(__dirname);
 
     const vosk_root = path.join(__dirname, "vosk");
     const voskPath = path.join(vosk_root, "vosk.js");

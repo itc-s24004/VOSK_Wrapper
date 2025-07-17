@@ -8,10 +8,14 @@ const EventEmitter = require("events");
  * @param {import("../../system/ModuleRepository/main").ModuleReposiory} REP 
  */
 exports.run = async (REP) => {
-    const local_node = await REP.getAsync("local_node");
+    exports.run = null;
+
+    const NodeManager = REP.get("NodeManager");
+    const local_node = await NodeManager.get("18.16.1");
+    if (!local_node) return
+
     const vosk_root = path.join(__dirname, "vosk");
     const voskPath = path.join(vosk_root, "vosk.js");
-
 
 
     class VOSK_Wrapper {
@@ -24,7 +28,7 @@ exports.run = async (REP) => {
          * @param {number} sampleRate 
          */
         constructor(sampleRate) {
-            this.#process = child.spawn(local_node, [voskPath, String(sampleRate)], {cwd: vosk_root, stdio: ["pipe", "pipe", "inherit"]});
+            this.#process = child.spawn(local_node.node, [voskPath, String(sampleRate)], {cwd: vosk_root, stdio: ["pipe", "pipe", "inherit"]});
             this.#process.stdout.on("data", (data) => {
                 try {
                     /**@type { import("./vosk/result").VOSK_Wrapper_Result } */
@@ -41,7 +45,7 @@ exports.run = async (REP) => {
          * 
          * @param {Buffer} buff 
          */
-        sendAudio(buff) {
+        inputAudio(buff) {
             this.#process.stdin.write(buff);
         }
 

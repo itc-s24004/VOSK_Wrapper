@@ -7,5 +7,7 @@ exports.run = async (REP) => {
     
     const local_node = await NodeManager.get("18.16.1");
     if (!local_node) throw new Error("LocalNodeを使用できません");
-    await local_node.npm_install(__dirname);
+    console.log(__dirname)
+    await local_node.npm(__dirname, ["install"], (ms) => {console.log(ms)});
+    // await local_node.npm_install(__dirname);
 }

@@ -13,7 +13,7 @@ exports.run = async (REP) => {
     const NodeManager = REP.get("NodeManager");
     const local_node = await NodeManager.get("18.16.1");
     if (!local_node) return;
-    await local_node.npm_install(__dirname);
+    // await local_node.npm_install(__dirname);
 
     const vosk_root = path.join(__dirname, "vosk");
     const voskPath = path.join(vosk_root, "vosk.js");
@@ -28,8 +28,8 @@ exports.run = async (REP) => {
          * BrowserWindow
          * @param {number} sampleRate 
          */
-        constructor(sampleRate) {
-            this.#process = child.spawn(local_node.node, [voskPath, String(sampleRate)], {cwd: vosk_root, stdio: ["pipe", "pipe", "inherit"]});
+        constructor(sampleRate, modelType) {
+            this.#process = child.spawn(local_node.node, [voskPath, String(sampleRate), modelType], {cwd: vosk_root, stdio: ["pipe", "pipe", "inherit"]});
             this.#process.stdout.on("data", (data) => {
                 try {
                     /**@type { import("./vosk/result").VOSK_Wrapper_Result } */

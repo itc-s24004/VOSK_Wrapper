@@ -4,10 +4,10 @@ const fs = require("fs");
 const path = require("path");
 
 
-const [ sample_rate, model_path] = process.argv.slice(2);
+const [ sample_rate, modelType] = process.argv.slice(2);
 
 
-const MODEL_PATH = path.join(__dirname, "vosk-model-ja-0.22");
+const MODEL_PATH = path.join(__dirname, modelType);
 const SAMPLE_RATE = Number(sample_rate);
 
 

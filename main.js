@@ -1,6 +1,8 @@
-const child = require("child_process")
+const child = require("child_process");
 const path = require("path");
+const fs = require("fs");
 const EventEmitter = require("events");
+
 
 
 /**
@@ -9,6 +11,10 @@ const EventEmitter = require("events");
  */
 exports.run = async (REP) => {
     exports.run = null;
+
+    const LOCAL_CONTENT_ROOT = REP.get("LOCAL_CONTENT_ROOT");
+    const MODEL_ROOT = path.join(LOCAL_CONTENT_ROOT, "VOSK_Wrapper/models");
+    if (!fs.existsSync(MODEL_ROOT)) fs.mkdirSync(MODEL_ROOT, {recursive: true});
 
     const NodeManager = REP.get("NodeManager");
     const local_node = await NodeManager.get("18.16.1");
@@ -20,6 +26,10 @@ exports.run = async (REP) => {
 
 
     class VOSK_Wrapper {
+        static get models() {
+            return fs.readdirSync(MODEL_ROOT).map(FDName => path.join(MODEL_ROOT, FDName)).filter(FDPath => fs.statSync(FDPath).isDirectory());
+        }
+
         #process
 
         #eventPipe = new EventEmitter();
@@ -28,8 +38,8 @@ exports.run = async (REP) => {
          * BrowserWindow
          * @param {number} sampleRate 
          */
-        constructor(sampleRate, modelType) {
-            this.#process = child.spawn(local_node.node, [voskPath, String(sampleRate), modelType], {cwd: vosk_root, stdio: ["pipe", "pipe", "inherit"]});
+        constructor(sampleRate, modelPath) {
+            this.#process = child.spawn(local_node.node, [voskPath, String(sampleRate), modelPath], {cwd: vosk_root, stdio: ["pipe", "pipe", "inherit"]});
             this.#process.stdout.on("data", (data) => {
                 try {
                     /**@type { import("./vosk/result").VOSK_Wrapper_Result } */

@@ -1,14 +1,23 @@
 {
-  "name": "vosk_speech",
+  "name": "vosk_wrapper",
   "version": "1.0.0",
+  "description": "[node_app_launcher](https://github.com/itc-s24004/node_app_launcher)用VOSKのラッパー   ## インストール 依存関係のインストールには node: v18 が必要です",
+  "homepage": "https://github.com/itc-s24004/VOSK_Wrapper#readme",
+  "bugs": {
+    "url": "https://github.com/itc-s24004/VOSK_Wrapper/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itc-s24004/VOSK_Wrapper.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "vosk": "^0.3.39"
+    "adm-zip": "^0.5.16"
   }
 }

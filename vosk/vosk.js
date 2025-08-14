@@ -1,4 +1,4 @@
-var vosk = require("vosk")
+const vosk = require("vosk")
 
 const fs = require("fs");
 const path = require("path");
@@ -13,7 +13,6 @@ const SAMPLE_RATE = Number(sample_rate);
 
 
 if (!fs.existsSync(MODEL_PATH)) {
-    console.log("Please download the model from https://alphacephei.com/vosk/models and unpack as " + MODEL_PATH + " in the current folder.");
     process.exit();
 }
 

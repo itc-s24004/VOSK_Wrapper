@@ -127,12 +127,15 @@ exports.run = async (REP) => {
 
         #eventPipe = new EventEmitter();
 
+        #exited = false;
+
         /**
          * BrowserWindow
          * @param {number} sampleRate 
          */
         constructor(sampleRate, modelPath = config.defaultModel) {
             this.#process = child.spawn(local_node.node, [VOSK, String(sampleRate), modelPath], {cwd: VOSK_ROOT, stdio: ["pipe", "pipe", "inherit"]});
+            this.#process.once("exit", () => this.#exited = true);
             this.#process.stdout.on("data", (data) => {
                 try {
                     /**@type { import("./vosk/result").VOSK_Wrapper_Result } */
@@ -150,7 +153,7 @@ exports.run = async (REP) => {
          * @param {Buffer} buff 
          */
         inputAudio(buff) {
-            this.#process.stdin.write(buff);
+            if (!this.#exited && !this.#process.killed) this.#process.stdin.write(buff);
         }
 
         
@@ -234,7 +237,6 @@ exports.run = async (REP) => {
 
     let packing = false;
     ipcMain.handle("VOSK_Wrapper", (ev, EventName, ...args) => {
-        if (!window || window.webContents != ev.sender) return;
         
         switch(EventName) {
             case "openModelDir":
@@ -243,12 +245,14 @@ exports.run = async (REP) => {
             case "getModels":
                 return VOSK_Wrapper.models;
             case "setModel":
+                if (!window || window.webContents != ev.sender) return;
                 const [ model ] = args;
                 config.defaultModel = model;
                 saveConfig();
                 break;
 
             case "build":
+                if (!window || window.webContents != ev.sender) return;
                 if (config.pack) return 1;
                 if (packing) return 0;
                 packing = true;
@@ -269,6 +273,7 @@ exports.run = async (REP) => {
                 packing = false;
                 return 1;
             case "status":
+                if (!window || window.webContents != ev.sender) return;
                 return config.pack ? 1 : packing ? 0 : -1;
         }
     });

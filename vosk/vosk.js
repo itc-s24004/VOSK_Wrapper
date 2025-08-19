@@ -23,8 +23,12 @@ const model = new vosk.Model(MODEL_PATH);
 const rec = new vosk.Recognizer({model: model, sampleRate: SAMPLE_RATE});
 
 
-
 process.stdin.on("data", (data) => {
+    if (data.byteLength <= 1) {
+        process.stdout.write(JSON.stringify({partial: false, result: rec.finalResult()}));
+        rec.reset();
+        return; 
+    }
     if (rec.acceptWaveform(data)) {
         process.stdout.write(JSON.stringify({partial: false, result: rec.result()}));
 
